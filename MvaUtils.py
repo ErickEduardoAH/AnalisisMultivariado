@@ -55,14 +55,12 @@ def getCanonicalBase(dim):
         canonicalBase.append(Vectors.dense(e))
     return canonicalBase
 
-def transformCanonicalBase(plt,components,canonicalBaseDF,colums):
-    M = 3*canonicalBaseDF.select(components).toPandas().as_matrix()
+def plotProjectedBase(plt,components,projectedCanonicalsPD,colums):
+    M = projectedCanonicalsPD[components].as_matrix()
     rows,cols = M.T.shape
-    maxes = 1.1*np.amax(abs(M), axis = 0)
+    maxes = np.amax(abs(M), axis = 0)
     for i,l in enumerate(range(0,cols)):
-        plt.axes().arrow(0,0,M[i,0],M[i,1],head_width=0.05,head_length=0.1,color = 'black')
-    plt.plot(0,0,'ok') #<-- plot a black point at the origin
-    plt.axis('equal')  #<-- set the axes to the same scale
-    plt.xlim([-maxes[0],maxes[0]]) #<-- set the x axis limits
-    plt.ylim([-maxes[1],maxes[1]]) #<-- set the y axis limits
-    plt.grid(b=True, which='major') #<-- plot grid lines
+        plt.axes().arrow(0,0,M[i,0],M[i,1],head_width=0.01,head_length=0.1,color='black')
+        plt.annotate(colums[i],xy=(M[i,0],M[i,1]),xytext=(M[i,0]+3/100,M[i,1]+3/100))
+    plt.plot(0,0,'ok')
+    plt.grid(b=True, which='major')
