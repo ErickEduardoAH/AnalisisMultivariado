@@ -59,8 +59,10 @@ def plotProjectedBase(plt,components,projectedCanonicalsPD,colums):
     M = projectedCanonicalsPD[components].as_matrix()
     rows,cols = M.T.shape
     maxes = np.amax(abs(M), axis = 0)
+    t = np.linspace(-100, 100, 100)
     for i,l in enumerate(range(0,cols)):
-        plt.axes().arrow(0,0,M[i,0],M[i,1],head_width=0.01,head_length=0.1,color='black')
+        plt.plot(t*M[i,0],t*M[i,1],color='blue',alpha=0.3)
+        plt.axes().arrow(0,0,M[i,0],M[i,1],head_width=0.04,head_length=0.1,color='black')
         plt.annotate(colums[i],xy=(M[i,0],M[i,1]),xytext=(M[i,0]+3/100,M[i,1]+3/100))
     plt.plot(0,0,'ok')
     plt.grid(b=True, which='major')
