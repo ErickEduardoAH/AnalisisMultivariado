@@ -45,9 +45,17 @@ def getProbabilityDensityContour(plt,datasetDF,cols,alpha,freedomDegrees,color,n
     sumaryTableDF = pd.DataFrame(sumaryTable,columns=['Summary',name])
     return sumaryTableDF
     
-def scatterPlot(plt,dataDF,col_1,col_2,color):
-    dataPD = dataDF.select([col_1,col_2]).toPandas()
+def scatterPlot(plt,dataDF,col_1,col_2,color,labels=None):
+    dataPD = None
+    if labels == None:
+        dataPD = dataDF.select([col_1,col_2]).toPandas()
+    else:
+        dataPD = dataDF.select([col_1,col_2,labels]).toPandas()
+        names = dataPD[[labels]].as_matrix().transpose()[0]            
+        for i, name in enumerate(names):
+            plt.annotate(name, (dataPD[col_1][i]+0.1,dataPD[col_2][i]+0.1),color=color)
     plt.scatter(dataPD[col_1],dataPD[col_2],color=color)
+    return plt
     
 def getCanonicalBase(dim):
     canonicalBase = []
