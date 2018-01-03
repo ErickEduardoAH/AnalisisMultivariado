@@ -77,6 +77,6 @@ def plotProjectedBase(plt,components,projectedCanonicalsPD,colums):
     for i,l in enumerate(range(0,cols)):
         plt.plot(t*M[i,0],t*M[i,1],color='blue',alpha=0.3)
         plt.axes().arrow(0,0,M[i,0],M[i,1],head_width=0.04,head_length=0.1,color='black')
-        plt.annotate(colums[i],xy=(M[i,0],M[i,1]),xytext=(M[i,0]+3/100,M[i,1]+3/100))
+        plt.annotate(colums[i],xy=(M[i,0],M[i,1]),xytext=(M[i,0]+2/100,M[i,1]+2/100))
     plt.plot(0,0,'ok')
     plt.grid(b=True, which='major')
