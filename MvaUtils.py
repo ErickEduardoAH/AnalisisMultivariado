@@ -8,6 +8,10 @@ from pyspark.ml.linalg import Vectors
 from pyspark.sql import Column as c
 from pyspark.sql.functions import array, udf, lit, col as c
 from pyspark.sql import types
+from scipy.stats import norm
+from numpy import linalg as linear
+from numpy import random as ran
+from scipy.stats import norm
 
 def computeMaximumLikelihoodEstimators(dataSetDF):
     mu = np.array(dataSetDF.groupby().mean().rdd.map(lambda r: r[:]).top(1)[0])
@@ -65,18 +69,33 @@ def getCanonicalBase(dim):
         canonicalBase.append(Vectors.dense(e))
     return canonicalBase
 
-def plotProjectedBase(plt,components,projectedCanonicalsPD,colums):
+def plotProjectedBase(plt,components,projectedCanonicalsPD,colums,axesColor='blue',axesAlpha=1,arrowWidth=1.0,\
+                      arrowColor='black',arrowAlpha=1,head_width=0.04,head_length=0.1,shift=2/100):
+    
     M = projectedCanonicalsPD[components].as_matrix()
     rows,cols = M.T.shape
     maxes = np.amax(abs(M), axis = 0)
-    t = np.linspace(-100, 100, 100)
+    t = np.linspace(-1000, 1000, 100)
     plt.xlabel(components[0])
     plt.ylabel(components[1])
     plt.axvline()
     plt.axhline()
     for i,l in enumerate(range(0,cols)):
-        plt.plot(t*M[i,0],t*M[i,1],color='blue',alpha=0.3)
-        plt.axes().arrow(0,0,M[i,0],M[i,1],head_width=0.04,head_length=0.1,color='black')
-        plt.annotate(colums[i],xy=(M[i,0],M[i,1]),xytext=(M[i,0]+2/100,M[i,1]+2/100))
+        plt.axes().arrow(0,0,M[i,0],M[i,1],head_width=head_width,head_length=head_length,\
+                         color=arrowColor,alpha=arrowAlpha,linewidth=arrowWidth)
+        plt.annotate(colums[i],xy=(M[i,0],M[i,1]),xytext=(M[i,0]+shift,M[i,1]+shift),\
+                         weight='bold',color=arrowColor)
+        plt.plot(t*M[i,0],t*M[i,1],color=axesColor,alpha=axesAlpha)        
     plt.plot(0,0,'ok')
     plt.grid(b=True, which='major')
+
+def mvNormalizerMatrix(Sigma):
+    eigenValues, eigenVectors = diagonalize(Sigma)
+    LambdaSqrt = np.diag([np.sqrt(v) for v in eigenValues])
+    return np.dot(LambdaSqrt,eigenVectors), eigenValues, eigenVectors
+
+def multivariateNormalVector(X,Shift,LinearTransform):
+    Z = [one*norm.ppf(ran.uniform()) for one in np.ones(len(Shift))]
+    X = [float(x) for x in np.dot(Z,LinearTransform)]
+    for i in range(0,len(X)): X[i]=X[i]+Shift[i]
+    return X
